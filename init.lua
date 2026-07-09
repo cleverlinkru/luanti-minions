@@ -7,5 +7,7 @@ local S = minetest.get_translator(minions.modname)
 minions.S = S
 
 dofile(minions.modpath .. "/api.lua")
+dofile(minions.modpath .. "/entity.lua")
+dofile(minions.modpath .. "/item.lua")
 
 minetest.log("action", "[" .. minions.modname .. "] loaded")
