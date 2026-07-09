@@ -1,0 +1,2 @@
+# Enable debug logging for the minions mod.
+minions.debug (Debug logging) bool false
