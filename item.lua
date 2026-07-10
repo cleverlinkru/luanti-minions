@@ -10,13 +10,12 @@ minetest.register_craftitem("minions:spawn_egg", {
 			return itemstack
 		end
 		local pos = vector.offset(pointed_thing.above, 0, 0.5, 0)
-		local obj = minetest.add_entity(pos, "minions:minion")
-		if obj and placer and placer:is_player() then
-			local ent = obj:get_luaentity()
-			if ent then
-				ent:_grab(placer)
-			end
+		local staticdata = ""
+		if placer and placer:is_player() then
+			local dir = vector.subtract(placer:get_pos(), pos)
+			staticdata = minetest.serialize({facing = minetest.dir_to_yaw(dir)})
 		end
+		minetest.add_entity(pos, "minions:minion", staticdata)
 		local name = placer and placer:is_player() and placer:get_player_name() or ""
 		if not minetest.is_creative_enabled(name) then
 			itemstack:take_item()
