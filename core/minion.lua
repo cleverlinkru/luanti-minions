@@ -87,7 +87,7 @@ function Minion:on_step(dtime)
 	end
 	local vel = self.object:get_velocity()
 	local vy = vel.y
-	if cmd.jump and self._jump_cd <= 0 and math.abs(vy) < 0.5 then
+	if cmd.jump and self._jump_cd <= 0 and self:_on_ground() then
 		vy = self.JUMP_VEL
 		self._jump_cd = self.JUMP_COOLDOWN
 	end
@@ -130,6 +130,20 @@ end
 
 function Minion:_active_brain()
 	return self._player_brain or self._brain
+end
+
+function Minion:_on_ground()
+	local pos = self.object:get_pos()
+	if not pos then return false end
+	local props = self.object:get_properties()
+	local feet_y = pos.y + (props.collisionbox and props.collisionbox[2] or 0)
+	local below = minetest.get_node({
+		x = math.floor(pos.x + 0.5),
+		y = math.floor(feet_y - 0.1),
+		z = math.floor(pos.z + 0.5),
+	})
+	local def = minetest.registered_nodes[below.name]
+	return def and def.walkable or false
 end
 
 function Minion:_update_label()

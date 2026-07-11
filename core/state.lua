@@ -5,6 +5,7 @@ State.__index = State
 
 State.IDLE = "idle"
 State.MOVING = "moving"
+State.MOVING_FAIL = "moving_fail"
 
 function State.new(minion)
 	local self = setmetatable({}, State)
