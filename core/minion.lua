@@ -40,9 +40,10 @@ function Minion:on_activate(staticdata, dtime_s)
 		color = {r = 255, g = 255, b = 255, a = 255},
 		bgcolor = {r = 0, g = 0, b = 0, a = 128},
 	})
-	self._label_visible = false
+	self._label_text = ""
 
 	self._animator = minions.Animator.new(self.object)
+	self._chat = minions.Chat.new(self)
 	self._brain = minions.Brain.new(self)
 	self._player_brain = nil
 end
@@ -55,8 +56,6 @@ function Minion:get_staticdata()
 end
 
 function Minion:on_step(dtime)
-	self:_update_label()
-
 	local cmd = self:_active_brain():think(dtime)
 
 	if cmd.sneak and self._player_brain then
@@ -64,6 +63,9 @@ function Minion:on_step(dtime)
 		self._player_brain = nil
 		cmd = self._brain:think(dtime)
 	end
+
+	self._chat:update(dtime)
+	self:_update_label()
 
 	self:_clamp_locked_player()
 
@@ -125,11 +127,10 @@ function Minion:_update_label()
 			break
 		end
 	end
-	if visible ~= self._label_visible then
-		self._label_visible = visible
-		self.object:set_nametag_attributes({
-			text = visible and self._name:get() or "",
-		})
+	local text = visible and (self._chat:current_text() or self._name:get()) or ""
+	if text ~= self._label_text then
+		self._label_text = text
+		self.object:set_nametag_attributes({text = text})
 	end
 end
 

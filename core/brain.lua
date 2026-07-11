@@ -6,10 +6,12 @@ Brain.__index = Brain
 function Brain.new(minion)
 	local self = setmetatable({}, Brain)
 	self.minion = minion
+	self._chat_brain = minions.ChatBrain.new(minion)
 	return self
 end
 
 function Brain:think(dtime)
+	self._chat_brain:think(dtime)
 	return {
 		forward = false,
 		backward = false,
