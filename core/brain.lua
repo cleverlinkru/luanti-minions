@@ -6,6 +6,7 @@ Brain.__index = Brain
 function Brain.new(minion)
 	local self = setmetatable({}, Brain)
 	self.minion = minion
+	self._state = minions.State.new(minion)
 	self._chat_brain = minions.ChatBrain.new(minion)
 	return self
 end

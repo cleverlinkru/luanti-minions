@@ -15,6 +15,7 @@ Minion.LABEL_RANGE = 30
 function Minion:on_activate(staticdata, dtime_s)
 	self._facing = 0
 	self._name = nil
+	local saved_state = nil
 	if staticdata and staticdata ~= "" then
 		local data = minetest.deserialize(staticdata)
 		if type(data) == "table" then
@@ -22,6 +23,7 @@ function Minion:on_activate(staticdata, dtime_s)
 			if data.name then
 				self._name = minions.Name.from(data.name)
 			end
+			saved_state = data.state
 		end
 	end
 	if not self._name then
@@ -46,6 +48,9 @@ function Minion:on_activate(staticdata, dtime_s)
 	self._chat = minions.Chat.new(self)
 	self._vision = minions.Vision.new(self)
 	self._brain = minions.Brain.new(self)
+	if saved_state then
+		self._brain._state:set(saved_state)
+	end
 	self._player_brain = nil
 end
 
@@ -53,6 +58,7 @@ function Minion:get_staticdata()
 	return minetest.serialize({
 		facing = self._facing,
 		name = self._name and self._name:get() or nil,
+		state = self._brain and self._brain._state:get() or nil,
 	})
 end
 
