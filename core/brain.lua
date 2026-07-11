@@ -10,6 +10,7 @@ function Brain.new(minion)
 	self._brain_chat = minions.BrainChat.new(minion)
 	self._brain_idle = minions.BrainIdle.new(minion)
 	self._brain_moving = minions.BrainMoving.new(minion)
+	self._brain_vision = minions.BrainVision.new(minion)
 	return self
 end
 
@@ -17,6 +18,7 @@ function Brain:think(dtime)
 	self._brain_chat:think(dtime)
 	self._brain_idle:think(dtime)
 	self._brain_moving:think(dtime)
+	self._brain_vision:think(dtime)
 	return {
 		forward = false,
 		backward = false,
