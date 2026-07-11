@@ -29,6 +29,11 @@ function Minion:on_activate(staticdata, dtime_s)
 
 	self._animator = minions.Animator.new(self.object)
 	self._brain = minions.Brain.new(self)
+	self._player_brain = nil
+end
+
+function Minion:_active_brain()
+	return self._player_brain or self._brain
 end
 
 function Minion:get_staticdata()
@@ -36,11 +41,11 @@ function Minion:get_staticdata()
 end
 
 function Minion:on_step(dtime)
-	local cmd = self._brain:think(dtime)
+	local cmd = self:_active_brain():think(dtime)
 
-	if cmd.sneak then
+	if cmd.sneak and self._player_brain then
 		self:_unlock_player()
-		self._brain = minions.Brain.new(self)
+		self._player_brain = nil
 		cmd = self._brain:think(dtime)
 	end
 
@@ -75,16 +80,16 @@ function Minion:on_step(dtime)
 end
 
 function Minion:on_punch(puncher, time_from_last_punch, tool_capabilities)
-	self._brain:on_punch(puncher, time_from_last_punch, tool_capabilities)
+	self:_active_brain():on_punch(puncher, time_from_last_punch, tool_capabilities)
 end
 
 function Minion:on_rightclick(clicker)
 	if clicker and clicker:is_player() then
 		self:_unlock_player()
 		self:_lock_player(clicker)
-		self._brain = minions.PlayerBrain.new(self, clicker)
+		self._player_brain = minions.PlayerBrain.new(self, clicker)
 	end
-	self._brain:on_rightclick(clicker)
+	self:_active_brain():on_rightclick(clicker)
 end
 
 function Minion:_lock_player(player)
