@@ -26,14 +26,18 @@ function Name.new()
 	return self
 end
 
-function Name.from(value)
-	local self = setmetatable({}, Name)
-	self.value = value
-	return self
-end
-
 function Name:get()
 	return self.value
+end
+
+function Name:get_staticdata()
+	return {value = self.value}
+end
+
+function Name:restore(data)
+	if data and data.value then
+		self.value = data.value
+	end
 end
 
 minions.Name = Name

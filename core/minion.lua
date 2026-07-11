@@ -14,28 +14,28 @@ Minion.LABEL_RANGE = 30
 
 function Minion:on_activate(staticdata, dtime_s)
 	self._facing = 0
-	self._name = nil
-	local saved_state = nil
+	self._jump_cd = 0
+	self._locked_player_name = nil
+	self._locked_pos = nil
+
+	self._name = minions.Name.new()
+	self._animator = minions.Animator.new(self.object)
+	self._chat = minions.Chat.new(self)
+	self._vision = minions.Vision.new(self)
+	self._brain = minions.Brain.new(self)
+	self._player_brain = nil
+
 	if staticdata and staticdata ~= "" then
 		local data = minetest.deserialize(staticdata)
 		if type(data) == "table" then
 			self._facing = data.facing or 0
-			if data.name then
-				self._name = minions.Name.from(data.name)
-			end
-			saved_state = data.state
+			self._name:restore(data.name)
+			self._brain:restore(data.brain)
 		end
-	end
-	if not self._name then
-		self._name = minions.Name.new()
 	end
 
 	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
 	self.object:set_yaw(self._facing + self.FACING_OFFSET)
-
-	self._jump_cd = 0
-	self._locked_player_name = nil
-	self._locked_pos = nil
 
 	self.object:set_nametag_attributes({
 		text = "",
@@ -43,22 +43,13 @@ function Minion:on_activate(staticdata, dtime_s)
 		bgcolor = {r = 0, g = 0, b = 0, a = 128},
 	})
 	self._label_text = ""
-
-	self._animator = minions.Animator.new(self.object)
-	self._chat = minions.Chat.new(self)
-	self._vision = minions.Vision.new(self)
-	self._brain = minions.Brain.new(self)
-	if saved_state then
-		self._brain._state:set(saved_state)
-	end
-	self._player_brain = nil
 end
 
 function Minion:get_staticdata()
 	return minetest.serialize({
 		facing = self._facing,
-		name = self._name and self._name:get() or nil,
-		state = self._brain and self._brain._state:get() or nil,
+		name = self._name:get_staticdata(),
+		brain = self._brain:get_staticdata(),
 	})
 end
 

@@ -31,5 +31,15 @@ end
 function Brain:on_rightclick(clicker)
 end
 
+function Brain:get_staticdata()
+	return {state = self._state:get_staticdata()}
+end
+
+function Brain:restore(data)
+	if data and data.state then
+		self._state:restore(data.state)
+	end
+end
+
 minions.Brain = Brain
 return Brain

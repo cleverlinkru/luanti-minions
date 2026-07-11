@@ -25,5 +25,15 @@ function State:is(state)
 	return self._current == state
 end
 
+function State:get_staticdata()
+	return {current = self._current}
+end
+
+function State:restore(data)
+	if data and data.current then
+		self._current = data.current
+	end
+end
+
 minions.State = State
 return State
