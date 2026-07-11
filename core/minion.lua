@@ -44,6 +44,7 @@ function Minion:on_activate(staticdata, dtime_s)
 
 	self._animator = minions.Animator.new(self.object)
 	self._chat = minions.Chat.new(self)
+	self._vision = minions.Vision.new(self)
 	self._brain = minions.Brain.new(self)
 	self._player_brain = nil
 end
@@ -65,6 +66,7 @@ function Minion:on_step(dtime)
 	end
 
 	self._chat:update(dtime)
+	self._vision:update(dtime)
 	self:_update_label()
 
 	self:_clamp_locked_player()
