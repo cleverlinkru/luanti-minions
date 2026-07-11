@@ -15,10 +15,11 @@ function Brain.new(minion)
 end
 
 function Brain:think(dtime)
-	self._brain_chat:think(dtime)
-	self._brain_idle:think(dtime)
-	self._brain_moving:think(dtime)
-	self._brain_vision:think(dtime)
+	if self._state:is(minions.State.IDLE) then
+		return self._brain_idle:think(dtime)
+	elseif self._state:is(minions.State.MOVING) then
+		return self._brain_moving:think(dtime)
+	end
 	return {
 		forward = false,
 		backward = false,

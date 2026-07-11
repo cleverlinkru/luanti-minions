@@ -10,6 +10,14 @@ function BrainIdle.new(minion)
 end
 
 function BrainIdle:think(dtime)
+	return {
+		forward = false,
+		backward = false,
+		turn_left = false,
+		turn_right = false,
+		jump = false,
+		sneak = false,
+	}
 end
 
 minions.BrainIdle = BrainIdle
