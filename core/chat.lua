@@ -34,13 +34,22 @@ function Chat.new(minion)
 	return self
 end
 
-function Chat:say(code)
+function Chat:say(code, opts)
 	local text = Chat.MESSAGES[code]
 	if not text then return false end
+	local to = opts and opts.to or nil
+	local display = text
+	if to and to._name then
+		display = to._name:get() .. ", " .. text
+	end
+	local msg = minions.Message.new(code, {
+		from = self.minion,
+		to = to,
+	})
 	self._current_code = code
-	self._current_text = text
+	self._current_text = display
 	self._current_time = Chat.SAY_DURATION
-	self:_broadcast(code)
+	self:_broadcast(msg)
 	return true
 end
 
@@ -56,8 +65,8 @@ function Chat:pop_incoming()
 	return table.remove(self._inbox, 1)
 end
 
-function Chat:hear(from, code)
-	table.insert(self._inbox, {from = from, code = code})
+function Chat:hear(msg)
+	table.insert(self._inbox, msg)
 end
 
 function Chat:update(dtime)
@@ -70,13 +79,13 @@ function Chat:update(dtime)
 	end
 end
 
-function Chat:_broadcast(code)
+function Chat:_broadcast(msg)
 	local pos = self.minion.object:get_pos()
 	if not pos then return end
 	for _, obj in ipairs(minetest.get_objects_inside_radius(pos, Chat.HEAR_RADIUS)) do
 		local ent = obj:get_luaentity()
 		if ent and ent.minion and ent.minion ~= self.minion and ent.minion._chat then
-			ent.minion._chat:hear(self.minion, code)
+			ent.minion._chat:hear(msg)
 		end
 	end
 end

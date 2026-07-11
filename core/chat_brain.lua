@@ -5,6 +5,7 @@ ChatBrain.__index = ChatBrain
 
 ChatBrain.SAY_MIN_INTERVAL = 6
 ChatBrain.SAY_MAX_INTERVAL = 18
+ChatBrain.ADDRESS_CHANCE = 0.4
 
 function ChatBrain.new(minion)
 	local self = setmetatable({}, ChatBrain)
@@ -21,14 +22,16 @@ end
 
 function ChatBrain:think(dtime)
 	local chat = self.minion._chat
-	local heard_something = false
+	local should_respond = false
 	while chat:has_incoming() do
 		local msg = chat:pop_incoming()
 		if msg.code ~= "heard" then
-			heard_something = true
+			if msg:is_broadcast() or msg:is_for(self.minion) then
+				should_respond = true
+			end
 		end
 	end
-	if heard_something then
+	if should_respond then
 		chat:say("heard")
 		return
 	end
@@ -46,7 +49,25 @@ end
 function ChatBrain:_say_random()
 	if #self._codes == 0 then return end
 	local code = self._codes[math.random(#self._codes)]
-	self.minion._chat:say(code)
+	local to = nil
+	if math.random() < ChatBrain.ADDRESS_CHANCE then
+		to = self:_pick_nearby_minion()
+	end
+	self.minion._chat:say(code, {to = to})
+end
+
+function ChatBrain:_pick_nearby_minion()
+	local pos = self.minion.object:get_pos()
+	if not pos then return nil end
+	local candidates = {}
+	for _, obj in ipairs(minetest.get_objects_inside_radius(pos, minions.Chat.HEAR_RADIUS)) do
+		local ent = obj:get_luaentity()
+		if ent and ent.minion and ent.minion ~= self.minion then
+			table.insert(candidates, ent.minion)
+		end
+	end
+	if #candidates == 0 then return nil end
+	return candidates[math.random(#candidates)]
 end
 
 minions.ChatBrain = ChatBrain

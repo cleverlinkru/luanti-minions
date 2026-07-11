@@ -8,6 +8,7 @@ minions.S = S
 
 dofile(minions.modpath .. "/core/animator.lua")
 dofile(minions.modpath .. "/core/name.lua")
+dofile(minions.modpath .. "/core/message.lua")
 dofile(minions.modpath .. "/core/chat.lua")
 dofile(minions.modpath .. "/core/chat_brain.lua")
 dofile(minions.modpath .. "/core/brain.lua")
