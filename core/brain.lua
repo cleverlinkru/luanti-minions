@@ -25,12 +25,6 @@ function Brain:think(dtime)
 	}
 end
 
-function Brain:on_punch(puncher, time_from_last_punch, tool_capabilities)
-end
-
-function Brain:on_rightclick(clicker)
-end
-
 function Brain:get_staticdata()
 	return {state = self._state:get_staticdata()}
 end

@@ -17,6 +17,8 @@ function Minion:on_activate(staticdata, dtime_s)
 	self._jump_cd = 0
 	self._locked_player_name = nil
 	self._locked_pos = nil
+	self._last_punch = nil
+	self._last_rightclick = nil
 
 	self._name = minions.Name.new()
 	self._animator = minions.Animator.new(self.object)
@@ -94,10 +96,19 @@ function Minion:on_step(dtime)
 	self._animator:set_moving(cmd.forward or cmd.backward)
 
 	self._animator:update(dtime)
+
+	self._last_punch = nil
+	self._last_rightclick = nil
 end
 
-function Minion:on_punch(puncher, time_from_last_punch, tool_capabilities)
-	self:_active_brain():on_punch(puncher, time_from_last_punch, tool_capabilities)
+function Minion:on_punch(puncher, time_from_last_punch, tool_capabilities, dir, damage)
+	self._last_punch = {
+		puncher = puncher,
+		time_from_last_punch = time_from_last_punch,
+		tool_capabilities = tool_capabilities,
+		dir = dir,
+		damage = damage,
+	}
 end
 
 function Minion:on_rightclick(clicker)
@@ -106,7 +117,15 @@ function Minion:on_rightclick(clicker)
 		self:_lock_player(clicker)
 		self._player_brain = minions.PlayerBrain.new(self, clicker)
 	end
-	self:_active_brain():on_rightclick(clicker)
+	self._last_rightclick = {clicker = clicker}
+end
+
+function Minion:last_punch()
+	return self._last_punch
+end
+
+function Minion:last_rightclick()
+	return self._last_rightclick
 end
 
 function Minion:_active_brain()
