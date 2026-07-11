@@ -7,12 +7,12 @@ function Brain.new(minion)
 	local self = setmetatable({}, Brain)
 	self.minion = minion
 	self._state = minions.State.new(minion)
-	self._chat_brain = minions.ChatBrain.new(minion)
+	self._brain_chat = minions.BrainChat.new(minion)
 	return self
 end
 
 function Brain:think(dtime)
-	self._chat_brain:think(dtime)
+	self._brain_chat:think(dtime)
 	return {
 		forward = false,
 		backward = false,
